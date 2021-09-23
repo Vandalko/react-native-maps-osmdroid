@@ -3,7 +3,7 @@
 React Native Map components for iOS + Android.
 
 # :warning: Android implementation doesn't support full API :warning:
-This for is based on latest code from https://github.com/react-native-maps/react-native-maps and patched with changes from https://github.com/fqborges/react-native-maps-osmdroid
+This fork is based on latest code from https://github.com/react-native-maps/react-native-maps and patched with changes from https://github.com/fqborges/react-native-maps-osmdroid
 
 ## Installation
 
