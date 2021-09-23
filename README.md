@@ -1,12 +1,9 @@
-# react-native-maps-osmdroid [![npm version](https://img.shields.io/npm/v/react-native-maps.svg?style=flat)](https://www.npmjs.com/package/react-native-maps)
+# react-native-maps-osmdroid
 
 React Native Map components for iOS + Android.
 
-More up-to-date Osmdroid fork version of https://github.com/fqborges/react-native-maps-osmdroid
-
-
-# :warning: Maintainers Wanted [![Maintainers Wanted](https://img.shields.io/badge/maintainers-wanted-red.svg)](https://github.com/react-native-maps/react-native-maps/issues/3564)
-We are in need of more people or companies willing to help. If you have enough time and knowledge, and want to become a maintainer, please let us know [here](https://github.com/react-native-maps/react-native-maps/issues/3564).
+# :warning: Android implementation doesn't support full API :warning:
+This for is based on latest code from https://github.com/react-native-maps/react-native-maps and patched with changes from https://github.com/fqborges/react-native-maps-osmdroid
 
 ## Installation
 
