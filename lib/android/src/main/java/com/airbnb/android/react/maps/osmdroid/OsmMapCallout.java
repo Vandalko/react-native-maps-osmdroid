@@ -1,15 +1,14 @@
-package com.airbnb.android.react.maps;
+package com.airbnb.android.react.maps.osmdroid;
 
 import android.content.Context;
-
 import com.facebook.react.views.view.ReactViewGroup;
 
-public class AirMapCallout extends ReactViewGroup {
+public class OsmMapCallout extends ReactViewGroup {
   private boolean tooltip = false;
   public int width;
   public int height;
 
-  public AirMapCallout(Context context) {
+  public OsmMapCallout(Context context) {
     super(context);
   }
 

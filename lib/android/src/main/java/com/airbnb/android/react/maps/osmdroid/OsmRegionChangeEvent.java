@@ -1,22 +1,23 @@
-package com.airbnb.android.react.maps;
+package com.airbnb.android.react.maps.osmdroid;
 
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 
-public class RegionChangeEvent extends Event<RegionChangeEvent> {
-  private final LatLngBounds bounds;
+import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.util.BoundingBox;
+
+public class OsmRegionChangeEvent extends Event<OsmRegionChangeEvent> {
+  private final BoundingBox bounds;
+  private final IGeoPoint center;
   private final boolean continuous;
-  private final boolean isGesture;
 
-  public RegionChangeEvent(int id, LatLngBounds bounds, boolean continuous, boolean isGesture) {
+  public OsmRegionChangeEvent(int id, BoundingBox bounds, IGeoPoint center, boolean continuous) {
     super(id);
     this.bounds = bounds;
+    this.center = center;
     this.continuous = continuous;
-    this.isGesture = isGesture;
   }
 
   @Override
@@ -31,17 +32,16 @@ public class RegionChangeEvent extends Event<RegionChangeEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
+
     WritableMap event = new WritableNativeMap();
     event.putBoolean("continuous", continuous);
 
     WritableMap region = new WritableNativeMap();
-    LatLng center = bounds.getCenter();
-    region.putDouble("latitude", center.latitude);
-    region.putDouble("longitude", center.longitude);
-    region.putDouble("latitudeDelta", bounds.northeast.latitude - bounds.southwest.latitude);
-    region.putDouble("longitudeDelta", bounds.northeast.longitude - bounds.southwest.longitude);
+    region.putDouble("latitude", center.getLatitude());
+    region.putDouble("longitude", center.getLongitude());
+    region.putDouble("latitudeDelta", bounds.getLatitudeSpan());
+    region.putDouble("longitudeDelta", bounds.getLongitudeSpan());
     event.putMap("region", region);
-    event.putBoolean("isGesture", isGesture);
 
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), event);
   }

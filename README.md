@@ -1,11 +1,13 @@
-# react-native-maps [![npm version](https://img.shields.io/npm/v/react-native-maps.svg?style=flat)](https://www.npmjs.com/package/react-native-maps)
+# react-native-maps-osmdroid [![npm version](https://img.shields.io/npm/v/react-native-maps.svg?style=flat)](https://www.npmjs.com/package/react-native-maps)
 
-React Native Map components for iOS + Android
+React Native Map components for iOS + Android.
+
+More up-to-date Osmdroid fork version of https://github.com/fqborges/react-native-maps-osmdroid
 
 
 # :warning: Maintainers Wanted [![Maintainers Wanted](https://img.shields.io/badge/maintainers-wanted-red.svg)](https://github.com/react-native-maps/react-native-maps/issues/3564)
 We are in need of more people or companies willing to help. If you have enough time and knowledge, and want to become a maintainer, please let us know [here](https://github.com/react-native-maps/react-native-maps/issues/3564).
- 
+
 ## Installation
 
 See [Installation Instructions](docs/installation.md).
@@ -119,7 +121,7 @@ import { Marker } from 'react-native-maps';
 
 ### Rendering a Marker with a custom image
 1. You need to generate an `png` image with various resolution (lets call them `custom_pin`) - for more information go to [Android](https://developer.android.com/studio/write/image-asset-studio#access), [iOS](https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/AddingImages.html)
-2. put all images in Android drawables and iOS assets dir 
+2. put all images in Android drawables and iOS assets dir
 3. Now you can use the following code:
 ```jsx
 <Marker

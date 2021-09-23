@@ -2,6 +2,14 @@ package com.airbnb.android.react.maps;
 
 import android.app.Activity;
 
+import com.airbnb.android.react.maps.osmdroid.OsmMapCalloutManager;
+import com.airbnb.android.react.maps.osmdroid.OsmMapCircleManager;
+import com.airbnb.android.react.maps.osmdroid.OsmMapFileTileManager;
+import com.airbnb.android.react.maps.osmdroid.OsmMapManager;
+import com.airbnb.android.react.maps.osmdroid.OsmMapMarkerManager;
+import com.airbnb.android.react.maps.osmdroid.OsmMapPolygonManager;
+import com.airbnb.android.react.maps.osmdroid.OsmMapPolylineManager;
+import com.airbnb.android.react.maps.osmdroid.OsmMapUrlTileManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
@@ -31,35 +39,24 @@ public class MapsPackage implements ReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    AirMapCalloutManager calloutManager = new AirMapCalloutManager();
-    AirMapMarkerManager annotationManager = new AirMapMarkerManager();
-    AirMapPolylineManager polylineManager = new AirMapPolylineManager(reactContext);
-    AirMapGradientPolylineManager gradientPolylineManager = new AirMapGradientPolylineManager(reactContext);
-    AirMapPolygonManager polygonManager = new AirMapPolygonManager(reactContext);
-    AirMapCircleManager circleManager = new AirMapCircleManager(reactContext);
-    AirMapManager mapManager = new AirMapManager(reactContext);
-    AirMapLiteManager mapLiteManager = new AirMapLiteManager(reactContext);
-    AirMapUrlTileManager urlTileManager = new AirMapUrlTileManager(reactContext);
-    AirMapWMSTileManager gsUrlTileManager = new AirMapWMSTileManager(reactContext);
-    AirMapLocalTileManager localTileManager = new AirMapLocalTileManager(reactContext);
-    AirMapOverlayManager overlayManager = new AirMapOverlayManager(reactContext);
-    AirMapHeatmapManager heatmapManager = new AirMapHeatmapManager();
-    mapManager.setMarkerManager(annotationManager);
+    OsmMapCalloutManager osmCalloutManager = new OsmMapCalloutManager();
+    OsmMapMarkerManager osmMarkerManager = new OsmMapMarkerManager();
+    OsmMapPolylineManager osmPolylineManager = new OsmMapPolylineManager(reactContext);
+    OsmMapPolygonManager osmPolygonManager = new OsmMapPolygonManager(reactContext);
+    OsmMapCircleManager osmMapCircleManager = new OsmMapCircleManager(reactContext);
+    OsmMapManager osmMapManager = new OsmMapManager(reactContext);
+    OsmMapUrlTileManager osmUrlTileManager = new OsmMapUrlTileManager();
+    OsmMapFileTileManager osmMapFileTileManager = new OsmMapFileTileManager();
 
     return Arrays.<ViewManager>asList(
-        calloutManager,
-        annotationManager,
-        polylineManager,
-        gradientPolylineManager,
-        polygonManager,
-        circleManager,
-        mapManager,
-        mapLiteManager,
-        urlTileManager,
-        gsUrlTileManager,
-        localTileManager,
-        overlayManager,
-        heatmapManager
+            osmCalloutManager,
+            osmMarkerManager,
+            osmPolylineManager,
+            osmPolygonManager,
+            osmMapCircleManager,
+            osmMapManager,
+            osmUrlTileManager,
+            osmMapFileTileManager
     );
   }
 }

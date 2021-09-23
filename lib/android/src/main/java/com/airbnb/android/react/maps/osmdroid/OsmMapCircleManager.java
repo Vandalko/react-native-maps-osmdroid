@@ -1,4 +1,4 @@
-package com.airbnb.android.react.maps;
+package com.airbnb.android.react.maps.osmdroid;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,12 +11,13 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.google.android.gms.maps.model.LatLng;
 
-public class AirMapCircleManager extends ViewGroupManager<AirMapCircle> {
+import org.osmdroid.util.GeoPoint;
+
+public class OsmMapCircleManager extends ViewGroupManager<OsmMapCircle> {
   private final DisplayMetrics metrics;
 
-  public AirMapCircleManager(ReactApplicationContext reactContext) {
+  public OsmMapCircleManager(ReactApplicationContext reactContext) {
     super();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       metrics = new DisplayMetrics();
@@ -30,43 +31,43 @@ public class AirMapCircleManager extends ViewGroupManager<AirMapCircle> {
 
   @Override
   public String getName() {
-    return "AIRMapCircle";
+    return "OsmMapCircle";
   }
 
   @Override
-  public AirMapCircle createViewInstance(ThemedReactContext context) {
-    return new AirMapCircle(context);
+  public OsmMapCircle createViewInstance(ThemedReactContext context) {
+    return new OsmMapCircle(context);
   }
 
   @ReactProp(name = "center")
-  public void setCenter(AirMapCircle view, ReadableMap center) {
-    view.setCenter(new LatLng(center.getDouble("latitude"), center.getDouble("longitude")));
+  public void setCenter(OsmMapCircle view, ReadableMap center) {
+    view.setCenter(new GeoPoint(center.getDouble("latitude"), center.getDouble("longitude")));
   }
 
   @ReactProp(name = "radius", defaultDouble = 0)
-  public void setRadius(AirMapCircle view, double radius) {
+  public void setRadius(OsmMapCircle view, double radius) {
     view.setRadius(radius);
   }
 
   @ReactProp(name = "strokeWidth", defaultFloat = 1f)
-  public void setStrokeWidth(AirMapCircle view, float widthInPoints) {
+  public void setStrokeWidth(OsmMapCircle view, float widthInPoints) {
     float widthInScreenPx = metrics.density * widthInPoints; // done for parity with iOS
     view.setStrokeWidth(widthInScreenPx);
   }
 
   @ReactProp(name = "fillColor", defaultInt = Color.RED, customType = "Color")
-  public void setFillColor(AirMapCircle view, int color) {
+  public void setFillColor(OsmMapCircle view, int color) {
     view.setFillColor(color);
   }
 
   @ReactProp(name = "strokeColor", defaultInt = Color.RED, customType = "Color")
-  public void setStrokeColor(AirMapCircle view, int color) {
+  public void setStrokeColor(OsmMapCircle view, int color) {
     view.setStrokeColor(color);
   }
 
-  @ReactProp(name = "zIndex", defaultFloat = 1.0f)
-  public void setZIndex(AirMapCircle view, float zIndex) {
-    view.setZIndex(zIndex);
-  }
+//  @ReactProp(name = "zIndex", defaultFloat = 1.0f)
+//  public void setZIndex(OSMMapCircle view, float zIndex) {
+//    view.setZIndex(zIndex);
+//  }
 
 }
