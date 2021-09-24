@@ -88,6 +88,9 @@ public class OsmMapPolygon extends OsmMapFeature {
 
   @Override
   public void addToMap(MapView map) {
+    if (polygon != null) {
+      map.getOverlays().remove(polygon);
+    }
     polygon = new Polygon();
     mapView = map;
     polygon.setPoints(coordinates);
@@ -101,6 +104,7 @@ public class OsmMapPolygon extends OsmMapFeature {
   @Override
   public void removeFromMap(MapView map) {
     map.getOverlays().remove(polygon);
+    mapView.invalidate();
     polygon = null;
     mapView = null;
   }

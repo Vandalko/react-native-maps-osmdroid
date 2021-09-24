@@ -334,6 +334,12 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
         if (feature instanceof OsmMapMarker) {
             //noinspection SuspiciousMethodCalls
             markerMap.remove(feature.getFeature());
+        } else if (feature instanceof OsmMapPolyline) {
+            //noinspection SuspiciousMethodCalls
+            polylineMap.remove(feature.getFeature());
+        } else if (feature instanceof OsmMapPolygon) {
+            //noinspection SuspiciousMethodCalls
+            polygonMap.remove(feature.getFeature());
         }
         feature.removeFromMap(this);
     }

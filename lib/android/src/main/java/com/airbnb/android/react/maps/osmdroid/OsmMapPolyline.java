@@ -78,6 +78,9 @@ public class OsmMapPolyline extends OsmMapFeature {
 
   @Override
   public void addToMap(MapView map) {
+    if (polyline != null) {
+      map.getOverlays().remove(polyline);
+    }
     polyline = new Polyline();
     mapView = map;
     polyline.setPoints(coordinates);
@@ -91,6 +94,7 @@ public class OsmMapPolyline extends OsmMapFeature {
   @Override
   public void removeFromMap(MapView map) {
     map.getOverlays().remove(polyline);
+    map.invalidate();
     polyline = null;
     mapView = null;
   }

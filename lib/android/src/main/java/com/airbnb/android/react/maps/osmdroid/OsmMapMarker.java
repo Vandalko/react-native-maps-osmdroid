@@ -270,6 +270,9 @@ public class OsmMapMarker extends OsmMapFeature {
 
     @Override
     public void addToMap(MapView map) {
+        if (marker != null) {
+            marker.remove(map);
+        }
         marker = new Marker(map);
         defaultInfoWindow = marker.getInfoWindow();
         defaultInfoWindow.getView().setOnTouchListener(OsmMapMarker.this.infoWindowTouched);
@@ -282,6 +285,7 @@ public class OsmMapMarker extends OsmMapFeature {
     public void removeFromMap(MapView map) {
         if (marker == null) return;
         marker.remove(map);
+        map.invalidate();
         cleanup();
     }
 

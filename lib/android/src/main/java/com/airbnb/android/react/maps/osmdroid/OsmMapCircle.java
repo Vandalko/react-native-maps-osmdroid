@@ -74,6 +74,9 @@ public class OsmMapCircle extends OsmMapFeature {
 
   @Override
   public void addToMap(MapView map) {
+    if (polygon != null) {
+      map.getOverlays().remove(polygon);
+    }
     polygon = new Polygon();
     mapView = map;
     polygon.setPoints(Polygon.pointsAsCircle(center, radius));
@@ -87,6 +90,7 @@ public class OsmMapCircle extends OsmMapFeature {
   @Override
   public void removeFromMap(MapView map) {
     map.getOverlays().remove(polygon);
+    map.invalidate();
     polygon = null;
     mapView = null;
   }
