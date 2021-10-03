@@ -70,6 +70,19 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
     private final ThemedReactContext context;
     private final EventDispatcher eventDispatcher;
 
+
+    private final Runnable measureAndLayout = new Runnable() {
+        @Override
+        public void run() {
+            if (!m_isDestroying) {
+                measure(
+                        MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+                layout(getLeft(), getTop(), getRight(), getBottom());
+            }
+        }
+    };
+
     public OsmMapView(ThemedReactContext reactContext,
                       ReactApplicationContext appContext,
                       OsmMapManager manager) {
@@ -148,6 +161,15 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
     public void onDetach() {
         if (m_isDestroying) {
             super.onDetach();
+        }
+    }
+
+    @Override
+    public void requestLayout() {
+        super.requestLayout();
+
+        if (!m_isDestroying) {
+            post(measureAndLayout);
         }
     }
 
@@ -307,18 +329,6 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
                 addFeature(children.getChildAt(i), index);
             }
         }*/
-    }
-
-    @Override
-    public void onViewAdded(View child) {
-        super.onViewAdded(child);
-        manager.invalidateNode(this);
-    }
-
-    @Override
-    public void onViewRemoved(View child) {
-        super.onViewRemoved(child);
-        manager.invalidateNode(this);
     }
 
     public int getFeatureCount() {

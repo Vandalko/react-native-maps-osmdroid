@@ -4,8 +4,6 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
 import com.airbnb.android.react.maps.SizeReportingShadowNode;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -16,7 +14,6 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -51,17 +48,6 @@ public class OsmMapManager extends ViewGroupManager<OsmMapView> {
         final String packageName = context.getApplicationContext().getApplicationInfo().packageName;
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
         Configuration.getInstance().setUserAgentValue(packageName);
-    }
-
-    void invalidateNode(final OsmMapView view) {
-        // to force refresh when adding/updating a callout
-        appContext.runOnNativeModulesQueueThread(new Runnable() {
-            @Override
-            public void run() {
-                UIManagerModule uiManagerModule = appContext.getNativeModule(UIManagerModule.class);
-                uiManagerModule.invalidateNodeLayout(view.getId());
-            }
-        });
     }
 
     @Override
