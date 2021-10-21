@@ -23,5 +23,5 @@ dependencies {
     exclude group: 'com.android.support'
   }
 
-  implementation "org.osmdroid:osmdroid-android:6.1.10"
+  implementation "org.osmdroid:osmdroid-android:6.1.11"
 }
