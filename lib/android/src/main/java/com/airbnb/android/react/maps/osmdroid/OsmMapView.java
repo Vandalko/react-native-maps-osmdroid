@@ -1,6 +1,7 @@
 package com.airbnb.android.react.maps.osmdroid;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.os.Handler;
@@ -70,6 +71,7 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
     private final ThemedReactContext context;
     private final EventDispatcher eventDispatcher;
 
+    private IGeoPoint tapLocation;
 
     private final Runnable measureAndLayout = new Runnable() {
         @Override
@@ -83,10 +85,41 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
         }
     };
 
+    private static boolean contextHasBug(Context context) {
+        return context == null ||
+                context.getResources() == null ||
+                context.getResources().getConfiguration() == null;
+    }
+
+    // We do this to fix this bug:
+    // https://github.com/react-native-maps/react-native-maps/issues/271
+    //
+    // which conflicts with another bug regarding the passed in context:
+    // https://github.com/react-native-maps/react-native-maps/issues/1147
+    //
+    // Doing this allows us to avoid both bugs.
+    private static Context getNonBuggyContext(ThemedReactContext reactContext,
+                                              ReactApplicationContext appContext) {
+        Context superContext = reactContext;
+        if (!contextHasBug(appContext.getCurrentActivity())) {
+            superContext = appContext.getCurrentActivity();
+        } else if (contextHasBug(superContext)) {
+            // we have the bug! let's try to find a better context to use
+            if (!contextHasBug(reactContext.getCurrentActivity())) {
+                superContext = reactContext.getCurrentActivity();
+            } else if (!contextHasBug(reactContext.getApplicationContext())) {
+                superContext = reactContext.getApplicationContext();
+            } else {
+                // ¯\_(ツ)_/¯
+            }
+        }
+        return superContext;
+    }
+
     public OsmMapView(ThemedReactContext reactContext,
                       ReactApplicationContext appContext,
                       OsmMapManager manager) {
-        super(reactContext.getApplicationContext());
+        super(getNonBuggyContext(reactContext, appContext));
         this.manager = manager;
         this.context = reactContext;
         this.addOnFirstLayoutListener(this);
@@ -105,6 +138,21 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
 
         gestureDetector =
                 new GestureDetectorCompat(reactContext, new GestureDetector.SimpleOnGestureListener() {
+
+                    @Override
+                    public boolean onDown(MotionEvent e) {
+                        tapLocation = null;
+                        return super.onDown(e);
+                    }
+
+                    @Override
+                    public boolean onSingleTapConfirmed(MotionEvent e) {
+                        int x = (int)e.getX();
+                        int y = (int)e.getY();
+                        tapLocation = getProjection().fromPixels(x, y);
+                        return super.onSingleTapConfirmed(e);
+                    }
+
                     @Override
                     public boolean onDoubleTap(MotionEvent e) {
                         view.startMonitoringRegion();
@@ -252,10 +300,10 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
     public void setRegion(ReadableMap region) {
         if (region == null) return;
 
-        Double lng = region.getDouble("longitude");
-        Double lat = region.getDouble("latitude");
-        Double lngDelta = region.getDouble("longitudeDelta");
-        Double latDelta = region.getDouble("latitudeDelta");
+        double lng = region.getDouble("longitude");
+        double lat = region.getDouble("latitude");
+        double lngDelta = region.getDouble("longitudeDelta");
+        double latDelta = region.getDouble("latitudeDelta");
         BoundingBox bounds = new BoundingBox(
                 lat + latDelta / 2, lng + lngDelta / 2,
                 lat - latDelta / 2, lng - lngDelta / 2
@@ -311,6 +359,7 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
             features.add(index, polygonView);
             Polygon polygon = (Polygon) polygonView.getFeature();
             polygonMap.put(polygon, polygonView);
+            polygon.setOnClickListener(onPolygonClickListener);
         } else if (child instanceof OsmMapUrlTile) {
             OsmMapUrlTile urlTileView = (OsmMapUrlTile) child;
             urlTileView.addToMap(this);
@@ -378,7 +427,7 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
         if (camera.hasKey("zoom")) {
             zoom = (float)camera.getDouble("zoom");
         }
-        Float bearing = getMapOrientation();
+        float bearing = getMapOrientation();
         if (camera.hasKey("heading")) {
             bearing = (float)camera.getDouble("heading");
         }
@@ -389,8 +438,8 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
         IGeoPoint center = getMapCenter();
         if (camera.hasKey("center")) {
             ReadableMap latLng = camera.getMap("center");
-            Double lat = latLng.getDouble("latitude");
-            Double lng = latLng.getDouble("longitude");
+            double lat = latLng.getDouble("latitude");
+            double lng = latLng.getDouble("longitude");
             center = new GeoPoint(lat, lng);
         }
 
@@ -596,7 +645,7 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
         }
     };
 
-    private OsmMapMarker.OnCalloutPressListener onCalloutPressListener = new OsmMapMarker.OnCalloutPressListener() {
+    private final OsmMapMarker.OnCalloutPressListener onCalloutPressListener = new OsmMapMarker.OnCalloutPressListener() {
         @Override
         public void OnCalloutPress(OsmMapMarker markerView) {
             Marker marker = (Marker) markerView.getFeature();
@@ -617,7 +666,7 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
         }
     };
 
-    private Marker.OnMarkerClickListener onMarkerClickListener = new Marker.OnMarkerClickListener() {
+    private final Marker.OnMarkerClickListener onMarkerClickListener = new Marker.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker, MapView mapView) {
             WritableMap event;
@@ -642,7 +691,7 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
         }
     };
 
-    private Marker.OnMarkerDragListener onMarkerDragListener = new Marker.OnMarkerDragListener() {
+    private final Marker.OnMarkerDragListener onMarkerDragListener = new Marker.OnMarkerDragListener() {
         @Override
         public void onMarkerDragStart(Marker marker) {
             WritableMap event = makeClickEventData(marker.getPosition());
@@ -674,12 +723,22 @@ public class OsmMapView extends MapView implements MapView.OnFirstLayoutListener
         }
     };
 
-    private Polyline.OnClickListener onPolylineClickListener = new Polyline.OnClickListener() {
+    private final Polyline.OnClickListener onPolylineClickListener = new Polyline.OnClickListener() {
         @Override
         public boolean onClick(Polyline polyline, MapView mapView, GeoPoint geoPoint) {
             WritableMap event = makeClickEventData(polyline.getActualPoints().get(0));
             event.putString("action", "polyline-press");
             manager.pushEvent(context, polylineMap.get(polyline), "onPress", event);
+            return true;
+        }
+    };
+
+    private final Polygon.OnClickListener onPolygonClickListener = new Polygon.OnClickListener() {
+        @Override
+        public boolean onClick(Polygon polygon, MapView mapView, GeoPoint eventPos) {
+            WritableMap event = makeClickEventData(tapLocation == null ? polygon.getActualPoints().get(0) : tapLocation);
+            event.putString("action", "polygon-press");
+            manager.pushEvent(context, polygonMap.get(polygon), "onPress", event);
             return true;
         }
     };
